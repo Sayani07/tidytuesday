@@ -1,0 +1,128 @@
+---
+title: "Rladies TidyTuesday"
+date: "26/02/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# load libraries
+library(ggplot2)
+library(tidyverse)
+library(visdat)
+library(viridis)
+```
+
+
+<!-- # Read the data and explore classand missingness -->
+
+```{r read}
+tuesdata <- tidytuesdayR::tt_load('2021-02-23')
+employed <- tuesdata$employed
+earn <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-23/earn.csv")
+```
+
+
+```{r}
+skimr::skim(earn)
+visdat::vis_dat(earn)
+vis_miss(earn)
+```
+
+Sex and Race always seem important when we are talking about earnings! So let's start with exploring that.
+
+```{r}
+earn %>%
+  ggplot(aes(
+    x = as.character(year),
+    y = median_weekly_earn,
+    colour = sex
+  )) +
+  geom_boxplot()
+```
+
+ 
+It seems like females and males both have higher weekly earning over years and females have had lower weekly income than males consistently over years. Further, the variability is more and increasing for men at a higher rate than female implying a more wealth gap over years.
+But is the same for all races? Let us see how are the gender pay gaps for different races?
+
+```{r}
+earn %>%
+  filter(sex != "Both Sexes") %>%
+  ggplot(aes(x = as.character(year), y = median_weekly_earn, colour = sex, group = sex)) +
+  stat_summary(fun = median, geom = "line") +
+  facet_wrap(~race) +
+  scale_color_brewer(palette = "Dark2")
+```
+
+
+It looks like, for whites, gender gap has been almost constant over time. Also, for African American people, gender gap is the lowest and for Asian it is the highest. Teh gender gap looks different for different races. What is the % gap compared to female's earning for each races and which race has the highest difference over years?
+
+
+```{r}
+earn_tbl <- earn %>%
+  ungroup() %>%
+  filter(sex != "Both Sexes") %>%
+  group_by(year, sex, race) %>%
+  mutate(median_earn = median(median_weekly_earn)) %>%
+  select(sex, year, median_earn, race) %>%
+  unique() %>%
+  pivot_wider(
+    names_from = sex,
+    values_from = median_earn
+  ) %>%
+  mutate(diff = (Men - Women) * 100 / Women)
+
+
+earn_tbl %>%
+  ggplot() +
+  geom_line(aes(x = year, y = diff, color = race)) +
+  scale_x_continuous(breaks = seq(2010, 2020, 1)) +
+  ylab("% gender gap") +
+  scale_color_viridis(discrete = TRUE) +
+  theme_void() +
+  theme_dark() +
+  theme(legend.position = "bottom")
+```
+
+For whites, the percentage gender gap has been constantly staying at aroiund 20% over years. For African American it is increasing from 10% to 15% from 2014 to 2020. For Asians, this pattern is just the opposite where the percentage gender gap is decreasing from 2012 to 2016 and then increasing after 2016. This could be a result of the political situation back in the US, when during Obama's presidential term, the gender gap was decreasing and then again started increasing during the presidency of Trump.
+
+
+On further discussions with other teams, we were interested to explore if the gender gap changes across quarters and age. It looks like for all quarters, more or less, the story has been the same. But for age, with increasing age, the gap between male and female pay just gets worse and the variability is the most for the age group 16-24 and 25-54.
+
+
+```{r}
+earn %>% 
+  filter(sex != "Both Sexes") %>%
+  ggplot(aes(
+    x = as.character(year),
+    y = median_weekly_earn,
+    fill = sex
+  )) +
+  geom_violin() +
+  facet_wrap(~quarter) +
+  scale_fill_viridis(discrete = TRUE, direction = -1) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+
+```{r}
+earn %>%
+  filter(!(age %in% 
+           c("16 years and over", 
+             "25 years and over",
+             "55 years and over",
+             "65 years and over"))) %>% 
+  filter(sex != "Both Sexes") %>%
+  ggplot(aes(
+    x = as.character(year),
+    y = median_weekly_earn,
+    colour = sex
+  )) +
+  geom_boxplot() +
+  facet_wrap(~age) +
+  scale_color_brewer(palette = "RdPu") + 
+  theme_dark() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+
