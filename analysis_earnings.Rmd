@@ -1,11 +1,10 @@
 ---
 title: "Rladies TidyTuesday"
-date: "26/02/2021"
-output: pdf_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 # load libraries
 library(ggplot2)
 library(tidyverse)
@@ -17,8 +16,8 @@ library(viridis)
 <!-- # Read the data and explore classand missingness -->
 
 ```{r read}
-tuesdata <- tidytuesdayR::tt_load('2021-02-23')
-employed <- tuesdata$employed
+#tuesdata <- tidytuesdayR::tt_load('2021-02-23')
+#employed <- tuesdata$employed
 earn <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-23/earn.csv")
 ```
 
@@ -38,7 +37,7 @@ earn %>%
     y = median_weekly_earn,
     colour = sex
   )) +
-  geom_boxplot()
+  geom_boxplot() + xlab("year")
 ```
 
  
@@ -51,7 +50,7 @@ earn %>%
   ggplot(aes(x = as.character(year), y = median_weekly_earn, colour = sex, group = sex)) +
   stat_summary(fun = median, geom = "line") +
   facet_wrap(~race) +
-  scale_color_brewer(palette = "Dark2")
+  scale_color_brewer(palette = "Dark2") + xlab("year")
 ```
 
 
@@ -81,7 +80,7 @@ earn_tbl %>%
   scale_color_viridis(discrete = TRUE) +
   theme_void() +
   theme_dark() +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") + xlab("year")
 ```
 
 For whites, the percentage gender gap has been constantly staying at aroiund 20% over years. For African American it is increasing from 10% to 15% from 2014 to 2020. For Asians, this pattern is just the opposite where the percentage gender gap is decreasing from 2012 to 2016 and then increasing after 2016. This could be a result of the political situation back in the US, when during Obama's presidential term, the gender gap was decreasing and then again started increasing during the presidency of Trump.
@@ -101,7 +100,7 @@ earn %>%
   geom_violin() +
   facet_wrap(~quarter) +
   scale_fill_viridis(discrete = TRUE, direction = -1) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + xlab("year")
 ```
 
 
@@ -122,7 +121,7 @@ earn %>%
   facet_wrap(~age) +
   scale_color_brewer(palette = "RdPu") + 
   theme_dark() + 
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + xlab("year")
 ```
 
-
+Happy exploring!
