@@ -69,4 +69,4 @@ earn_tbl %>%
   theme_dark() +
   theme(legend.position = "bottom")
 
-# A: For whites, the percentage gender gap has been constantly staying at aroiund $20%$ over years. For African American it is increasing from 10% to 15% from 2014 to 2020. For Asian people, this pattern is just the opposite where the percentage gender gap is decreasing from 2012 to 2016 and then increasing after 2016. This could be a result of the political situation back in US, where it might be possible that during Obama rule the gender gap was decreasing and then again started increased after Trump became the President.
+# A: For whites, the percentage gender gap has been constantly staying at aroiund $20%$ over years. For African American it is increasing from 10% to 15% from 2014 to 2020. For Asian people, this pattern is just the opposite where the percentage gender gap is decreasing from 2012 to 2016 and then increasing after 2016. This could be a result of the political situation back in the US, when during Obama's presidential term, the gender gap was decreasing and then again started increasing during the presidency of Trump.
